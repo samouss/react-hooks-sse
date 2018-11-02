@@ -5,6 +5,10 @@
   "main": "dist/index.js",
   "license": "MIT",
   "private": true,
+  "scripts": {
+    "start:server": "node server.js",
+    "start:example": "(cd example && yarn start)"
+  },
   "dependencies": {
     "react": "^16.7.0-alpha.0"
   },
