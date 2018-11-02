@@ -6,19 +6,24 @@ export const useSSESubscription = eventName => {
   const [value, setValue] = useState([]);
 
   useEffect(() => {
-    source.addEventListener(eventName, event => {
+    const listener = event => {
       const data = JSON.parse(event.data);
 
       setValue(previousValue => {
-        return previousValue.concat({
-          id: event.lastEventId,
-          data,
-        });
+        return [
+          {
+            id: event.lastEventId,
+            data,
+          },
+          ...previousValue,
+        ];
       });
-    });
+    };
+
+    source.addEventListener(eventName, listener);
 
     return () => {
-      source.close();
+      source.removeEventListener(eventName, listener);
     };
   }, []);
 
