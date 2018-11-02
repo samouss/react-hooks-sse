@@ -1,4 +1,3 @@
-const path = require('path');
 const EventEmitter = require('events');
 const uuid = require('uuid');
 const cors = require('cors');
@@ -8,11 +7,6 @@ const server = express();
 const emitter = new EventEmitter();
 
 server.use(cors());
-
-// TO DROP
-server.get('/', (_, res) => {
-  res.sendFile(path.join(__dirname + '/index.html'));
-});
 
 server.get('/sse', (req, res) => {
   res.writeHead(200, {
