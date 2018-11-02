@@ -8,6 +8,11 @@ const emitter = new EventEmitter();
 
 server.use(cors());
 
+const state = {
+  likes: 10,
+  comments: 3,
+};
+
 server.get('/sse', (req, res) => {
   res.writeHead(200, {
     'Content-Type': 'text/event-stream',
@@ -33,7 +38,19 @@ server.listen(8080, () => {
 });
 
 setInterval(() => {
-  emitter.emit('push', 'time', {
-    timestamp: Date.now(),
+  state.likes += Math.floor(Math.random() * 10) + 1;
+
+  emitter.emit('push', 'likes', {
+    value: state.likes,
   });
-}, 1000);
+}, 2500);
+
+setTimeout(() => {
+  setInterval(() => {
+    state.comments += Math.floor(Math.random() * 10) + 1;
+
+    emitter.emit('push', 'comments', {
+      value: state.comments,
+    });
+  }, 2500);
+}, 1250);
