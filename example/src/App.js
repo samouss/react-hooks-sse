@@ -1,19 +1,40 @@
-import React from 'react';
-import useSSE from './useSSE';
+import React, { useState } from 'react';
+import { SSEProvider } from './lib';
+import createSSEComponent from './createSSEComponent';
 import './App.css';
 
+const Likes = createSSEComponent({
+  event: 'likes',
+  label: 'Likes',
+  emoji: '👍',
+});
+
+const Comments = createSSEComponent({
+  event: 'comments',
+  label: 'Comments',
+  emoji: '💬',
+});
+
 const App = () => {
-  const events = useSSE('http://localhost:8080/sse', {
-    withCredentials: false,
-  });
+  const [showLikes, setShowLikes] = useState(false);
+  const [showComments, setShowComments] = useState(false);
 
   return (
     <div className="App">
-      <ul>
-        {events.map(event => (
-          <li key={event.id}>{event.data.timestamp}</li>
-        ))}
-      </ul>
+      <SSEProvider endpoint="http://localhost:8080/sse">
+        <div>
+          <button onClick={() => setShowLikes(previous => !previous)}>
+            Toggle "Likes"
+          </button>
+          {showLikes && <Likes />}
+        </div>
+        <div>
+          <button onClick={() => setShowComments(previous => !previous)}>
+            Toggle "Comments"
+          </button>
+          {showComments && <Comments />}
+        </div>
+      </SSEProvider>
     </div>
   );
 };
