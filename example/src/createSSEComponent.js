@@ -2,7 +2,7 @@ import React from 'react';
 import { useSSESubscription } from './lib';
 
 const createSSEComponent = ({ event, label, emoji }) => () => {
-  const [last] = useSSESubscription(event);
+  const last = useSSESubscription(event);
 
   return (
     <p>
