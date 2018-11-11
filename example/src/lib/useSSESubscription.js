@@ -8,24 +8,27 @@ export const useSSESubscription = (
   const source = useContext(SSEContext);
   const [value, setValue] = useState(initialValue);
 
-  useEffect(() => {
-    const listener = event => {
-      const data = JSON.parse(event.data);
+  useEffect(
+    () => {
+      const listener = event => {
+        const data = JSON.parse(event.data);
 
-      setValue(previousValue => {
-        return reducer(previousValue, {
-          id: event.lastEventId,
-          data,
+        setValue(previousValue => {
+          return reducer(previousValue, {
+            id: event.lastEventId,
+            data,
+          });
         });
-      });
-    };
+      };
 
-    source.addEventListener(eventName, listener);
+      source.addEventListener(eventName, listener);
 
-    return () => {
-      source.removeEventListener(eventName, listener);
-    };
-  }, []);
+      return () => {
+        source.removeEventListener(eventName, listener);
+      };
+    },
+    [eventName]
+  );
 
   return value;
 };
