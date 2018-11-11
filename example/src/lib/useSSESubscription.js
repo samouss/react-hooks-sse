@@ -1,22 +1,22 @@
 import { useContext, useState, useEffect } from 'react';
 import { SSEContext } from './SSEContext';
 
-export const useSSESubscription = eventName => {
+export const useSSESubscription = (
+  eventName,
+  { initialValue = null, reducer = (_, changes) => changes } = {}
+) => {
   const source = useContext(SSEContext);
-  const [value, setValue] = useState([]);
+  const [value, setValue] = useState(initialValue);
 
   useEffect(() => {
     const listener = event => {
       const data = JSON.parse(event.data);
 
       setValue(previousValue => {
-        return [
-          {
-            id: event.lastEventId,
-            data,
-          },
-          ...previousValue,
-        ];
+        return reducer(previousValue, {
+          id: event.lastEventId,
+          data,
+        });
       });
     };
 
