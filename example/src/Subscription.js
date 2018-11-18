@@ -1,7 +1,8 @@
 import React from 'react';
+// import PropTypes from 'prop-types';
 import { useSSESubscription } from './lib';
 
-const createSSEComponent = ({ event, label, emoji }) => () => {
+const Subscription = ({ event, label, emoji }) => {
   const last = useSSESubscription(event);
 
   return (
@@ -14,4 +15,4 @@ const createSSEComponent = ({ event, label, emoji }) => () => {
   );
 };
 
-export default createSSEComponent;
+export default Subscription;

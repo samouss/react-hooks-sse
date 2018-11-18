@@ -1,38 +1,30 @@
 import React, { useState } from 'react';
 import { SSEProvider } from './lib';
-import createSSEComponent from './createSSEComponent';
+import Subscription from './Subscription';
 import './App.css';
 
-const Likes = createSSEComponent({
-  event: 'likes',
-  label: 'Likes',
-  emoji: '👍',
-});
-
-const Comments = createSSEComponent({
-  event: 'comments',
-  label: 'Comments',
-  emoji: '💬',
-});
-
 const App = () => {
-  const [showLikes, setShowLikes] = useState(false);
+  const [showLikes, setShowLikes] = useState(true);
   const [showComments, setShowComments] = useState(false);
 
   return (
     <div className="App">
+      <h1>React hook SSE</h1>
       <SSEProvider endpoint="http://localhost:8080/sse">
         <div>
           <button onClick={() => setShowLikes(previous => !previous)}>
             Toggle "Likes"
           </button>
-          {showLikes && <Likes />}
+          {showLikes && <Subscription event="likes" label="Likes" emoji="👍" />}
         </div>
+        <br />
         <div>
           <button onClick={() => setShowComments(previous => !previous)}>
             Toggle "Comments"
           </button>
-          {showComments && <Comments />}
+          {showComments && (
+            <Subscription event="comments" label="Comments" emoji="💬" />
+          )}
         </div>
       </SSEProvider>
     </div>
