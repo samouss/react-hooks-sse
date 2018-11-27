@@ -3,7 +3,11 @@ import { SSEContext } from './SSEContext';
 
 export const useSSESubscription = (
   eventName,
-  { initialState = null, stateReducer = (_, changes) => changes } = {}
+  {
+    initialState = null,
+    stateReducer = (_, changes) => changes,
+    parser = data => JSON.parse(data),
+  } = {}
 ) => {
   const source = useContext(SSEContext);
   const [value, setValue] = useState(initialState);
@@ -11,7 +15,7 @@ export const useSSESubscription = (
   useEffect(
     () => {
       const listener = event => {
-        const data = JSON.parse(event.data);
+        const data = parser(event.data);
 
         setValue(previousValue => {
           return stateReducer(previousValue, {
