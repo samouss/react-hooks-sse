@@ -3,14 +3,29 @@ import React from 'react';
 import { useSSESubscription } from './lib';
 
 const Likes = () => {
-  const last = useSSESubscription('likes');
+  const state = useSSESubscription('likes', {
+    initialState: {
+      count: null,
+      lastChange: null,
+    },
+    stateReducer(prevState, changes) {
+      return {
+        count: changes.data.value,
+        lastChange:
+          prevState.count !== null
+            ? changes.data.value - prevState.count
+            : null,
+      };
+    },
+  });
 
   return (
     <p>
       <span role="img" aria-label="Likes">
         👍
       </span>{' '}
-      {last ? last.data.value : '...'}
+      {state.count ? state.count : '...'}
+      {state.lastChange !== null && ` (+${state.lastChange})`}
     </p>
   );
 };
