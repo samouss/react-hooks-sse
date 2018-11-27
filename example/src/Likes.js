@@ -2,17 +2,17 @@ import React from 'react';
 // import PropTypes from 'prop-types';
 import { useSSESubscription } from './lib';
 
-const Subscription = ({ event, label, emoji }) => {
-  const last = useSSESubscription(event);
+const Likes = () => {
+  const last = useSSESubscription('likes');
 
   return (
     <p>
-      <span role="img" aria-label={label}>
-        {emoji}
+      <span role="img" aria-label="Likes">
+        👍
       </span>{' '}
       {last ? last.data.value : '...'}
     </p>
   );
 };
 
-export default Subscription;
+export default Likes;

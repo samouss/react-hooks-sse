@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { SSEProvider } from './lib';
-import Subscription from './Subscription';
+import Likes from './Likes';
+import Comments from './Comments';
 import './App.css';
 
 const App = () => {
@@ -15,16 +16,14 @@ const App = () => {
           <button onClick={() => setShowLikes(previous => !previous)}>
             Toggle "Likes"
           </button>
-          {showLikes && <Subscription event="likes" label="Likes" emoji="👍" />}
+          {showLikes && <Likes />}
         </div>
         <br />
         <div>
           <button onClick={() => setShowComments(previous => !previous)}>
             Toggle "Comments"
           </button>
-          {showComments && (
-            <Subscription event="comments" label="Comments" emoji="💬" />
-          )}
+          {showComments && <Comments />}
         </div>
       </SSEProvider>
     </div>
