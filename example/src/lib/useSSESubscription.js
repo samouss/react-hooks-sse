@@ -15,7 +15,7 @@ export const useSSESubscription = (
 
         setValue(previousValue => {
           return stateReducer(previousValue, {
-            id: event.lastEventId,
+            event,
             data,
           });
         });
