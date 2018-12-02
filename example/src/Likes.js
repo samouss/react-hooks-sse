@@ -1,6 +1,6 @@
 import React from 'react';
 // import PropTypes from 'prop-types';
-import { useSSESubscription } from './lib';
+import { useSSESubscription } from 'react-hook-sse';
 
 const Likes = () => {
   const state = useSSESubscription('likes', {
