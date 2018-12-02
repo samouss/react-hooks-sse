@@ -17,7 +17,9 @@
     "test": "jest",
     "test:watch": "yarn test --watch",
     "start:server": "node server.js",
-    "start:example": "(cd example && yarn && yarn start)"
+    "start:example": "(cd example && yarn && yarn start)",
+    "source:link": "scripts/link.sh",
+    "source:unlink": "scripts/unlink.sh"
   },
   "dependencies": {
     "@babel/runtime": "^7.1.5"
