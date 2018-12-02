@@ -24,7 +24,13 @@ const configuration = ({ minify }) => ({
     resolve(),
     commonjs({
       namedExports: {
-        react: ['createContext', 'useState', 'useContext', 'useEffect'],
+        react: [
+          'createElement',
+          'createContext',
+          'useState',
+          'useContext',
+          'useEffect',
+        ],
       },
     }),
     minify && terser(),
