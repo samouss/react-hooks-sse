@@ -11,6 +11,7 @@
     "build:cjs": "babel src --out-dir dist/cjs",
     "build:esm": "BABEL_ENV=esm babel src --out-dir dist/es",
     "build:umd": "BABEL_ENV=esm rollup -c rollup.config.js",
+    "watch": "yarn build:cjs --watch",
     "lint": "eslint src",
     "lint:fix": "yarn lint --fix",
     "test": "jest",
