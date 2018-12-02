@@ -17,12 +17,12 @@ export const useSSESubscription = (
       const listener = event => {
         const data = parser(event.data);
 
-        setValue(previousValue => {
-          return stateReducer(previousValue, {
+        setValue(previousValue =>
+          stateReducer(previousValue, {
             event,
             data,
-          });
-        });
+          })
+        );
       };
 
       source.addEventListener(eventName, listener);
