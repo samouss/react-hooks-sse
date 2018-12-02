@@ -10,7 +10,6 @@ module.exports = {
         useBuiltIns: false,
       },
     ],
-    '@babel/react',
   ],
   plugins: [
     [
