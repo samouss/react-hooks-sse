@@ -1,4 +1,4 @@
-import React, { createContext, useState } from 'react';
+import { createElement, createContext, useState } from 'react';
 // import { string, boolean, shape } from 'prop-types';
 
 export const SSEContext = createContext(null);
@@ -52,7 +52,10 @@ export const SSEProvider = ({ endpoint, options, ...props }) => {
     })
   );
 
-  return <SSEContext.Provider {...props} value={source} />;
+  return createElement(SSEContext.Provider, {
+    ...props,
+    value: source,
+  });
 };
 
 // @TODO: enable props
