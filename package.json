@@ -22,7 +22,8 @@
     "source:unlink": "scripts/unlink.sh"
   },
   "dependencies": {
-    "@babel/runtime": "^7.1.5"
+    "@babel/runtime": "^7.1.5",
+    "prop-types": "^15.6.2"
   },
   "devDependencies": {
     "@babel/cli": "7.1.5",
