@@ -1,4 +1,4 @@
-export const createEventSourceManager = ({ endpoint, options = {} }) => {
+export const createSourceManager = ({ endpoint, options = {} }) => {
   const state = {
     source: null,
     listenersByName: new Map(),

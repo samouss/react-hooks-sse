@@ -1,4 +1,4 @@
-import { createEventSourceManager } from '../createEventSourceManager';
+import { createSourceManager } from '../createSourceManager';
 
 const createEventSourceMock = () =>
   jest.fn((endpoint, options) => ({
@@ -9,7 +9,7 @@ const createEventSourceMock = () =>
     close: jest.fn(),
   }));
 
-describe('createEventSourceManager', () => {
+describe('createSourceManager', () => {
   beforeEach(() => {
     window.EventSource = createEventSourceMock();
   });
@@ -24,7 +24,7 @@ describe('createEventSourceManager', () => {
 
   describe('addEventListener', () => {
     it('expect to create a source that listen on `http://localhost/sse`', () => {
-      const manager = createEventSourceManager({
+      const manager = createSourceManager({
         ...defaultOptions,
       });
 
@@ -35,7 +35,7 @@ describe('createEventSourceManager', () => {
     });
 
     it('expect to create a source that listen on `http://localhost/sse` with options', () => {
-      const manager = createEventSourceManager({
+      const manager = createSourceManager({
         ...defaultOptions,
         options: {
           withCredentials: true,
@@ -52,7 +52,7 @@ describe('createEventSourceManager', () => {
     it('expect to create a listener on a source with the provided argument', () => {
       const event = 'event';
       const listener = () => {};
-      const manager = createEventSourceManager({
+      const manager = createSourceManager({
         ...defaultOptions,
       });
 
@@ -65,7 +65,7 @@ describe('createEventSourceManager', () => {
     });
 
     it('expect to create a source only once a listener is added', () => {
-      const manager = createEventSourceManager({
+      const manager = createSourceManager({
         ...defaultOptions,
       });
 
@@ -77,7 +77,7 @@ describe('createEventSourceManager', () => {
     });
 
     it('expect to create a source only once with multiple listeners', () => {
-      const manager = createEventSourceManager({
+      const manager = createSourceManager({
         ...defaultOptions,
       });
 
@@ -93,7 +93,7 @@ describe('createEventSourceManager', () => {
     it('expect to remove a listener on a source with the provided arguments', () => {
       const event = 'event';
       const listener = () => {};
-      const manager = createEventSourceManager({
+      const manager = createSourceManager({
         ...defaultOptions,
       });
 
@@ -110,7 +110,7 @@ describe('createEventSourceManager', () => {
       const event = 'event';
       const listener = () => {};
 
-      const manager = createEventSourceManager({
+      const manager = createSourceManager({
         ...defaultOptions,
       });
 
@@ -131,7 +131,7 @@ describe('createEventSourceManager', () => {
       const event1 = 'event';
       const listener1 = () => {};
 
-      const manager = createEventSourceManager({
+      const manager = createSourceManager({
         ...defaultOptions,
       });
 

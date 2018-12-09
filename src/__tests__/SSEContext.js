@@ -1,10 +1,10 @@
 import { createElement } from 'react';
 import TestRenderer from 'react-test-renderer';
 import { SSEProvider, SSEConsumer } from '../SSEContext';
-import { createEventSourceManager } from '../createEventSourceManager';
+import { createSourceManager } from '../createSourceManager';
 
-jest.mock('../createEventSourceManager', () => ({
-  createEventSourceManager: jest.fn(),
+jest.mock('../createSourceManager', () => ({
+  createSourceManager: jest.fn(),
 }));
 
 describe('SSEContext', () => {
@@ -13,7 +13,7 @@ describe('SSEContext', () => {
   };
 
   beforeEach(() => {
-    createEventSourceManager.mockReset();
+    createSourceManager.mockReset();
   });
 
   it('expect to create a source manager with default options', () => {
@@ -23,7 +23,7 @@ describe('SSEContext', () => {
       })
     );
 
-    expect(createEventSourceManager).toHaveBeenCalledWith({
+    expect(createSourceManager).toHaveBeenCalledWith({
       endpoint: 'http://localhost/sse',
       options: {
         withCredentials: false,
@@ -41,7 +41,7 @@ describe('SSEContext', () => {
       })
     );
 
-    expect(createEventSourceManager).toHaveBeenCalledWith({
+    expect(createSourceManager).toHaveBeenCalledWith({
       endpoint: 'http://localhost/sse',
       options: {
         withCredentials: true,
@@ -57,19 +57,19 @@ describe('SSEContext', () => {
 
     const renderer = TestRenderer.create(createProviderElement());
 
-    expect(createEventSourceManager).toHaveBeenCalledTimes(1);
+    expect(createSourceManager).toHaveBeenCalledTimes(1);
 
     renderer.update(createProviderElement());
     renderer.update(createProviderElement());
     renderer.update(createProviderElement());
 
-    expect(createEventSourceManager).toHaveBeenCalledTimes(1);
+    expect(createSourceManager).toHaveBeenCalledTimes(1);
   });
 
   it('expect to expose a source manager through the context', () => {
     const manager = {};
 
-    createEventSourceManager.mockImplementationOnce(() => manager);
+    createSourceManager.mockImplementationOnce(() => manager);
 
     TestRenderer.create(
       createElement(

@@ -1,6 +1,6 @@
 import { createElement, createContext, useState } from 'react';
 import { string, bool, shape } from 'prop-types';
-import { createEventSourceManager } from './createEventSourceManager';
+import { createSourceManager } from './createSourceManager';
 
 export const SSEContext = createContext(null);
 
@@ -8,7 +8,7 @@ export const SSEConsumer = SSEContext.Consumer;
 
 export const SSEProvider = ({ endpoint, options, ...props }) => {
   const [source] = useState(() =>
-    createEventSourceManager({
+    createSourceManager({
       endpoint,
       options,
     })
