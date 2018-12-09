@@ -4296,6 +4296,21 @@ rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
+react-is@^16.7.0-alpha.0:
+  version "16.7.0-alpha.2"
+  resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.7.0-alpha.2.tgz#0dd7f95d45ad5318b7f7bcb99dcb84da9385cb57"
+  integrity sha512-1Q3qN8nMWUfFcRz/bBC1f9zSL3il9OcSxMd9CNnpJbeFf4VCX0qYxL3TuwT4f+tFk1TkidwIL11yYgk4HjldYg==
+
+react-test-renderer@16.7.0-alpha.0:
+  version "16.7.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/react-test-renderer/-/react-test-renderer-16.7.0-alpha.0.tgz#f60e888621537cf8301fc154e8e98e59fb9c7050"
+  integrity sha512-yOJTaUgy7V/Lpmv61g2oJdwEGUiAVJ21mYlHtUniUC8rW0HVpTVMDAVSEqgjlCYDfTwGh3hNTvoYaODJzkQKMw==
+  dependencies:
+    object-assign "^4.1.1"
+    prop-types "^15.6.2"
+    react-is "^16.7.0-alpha.0"
+    scheduler "^0.11.0-alpha.0"
+
 react@16.7.0-alpha.0:
   version "16.7.0-alpha.0"
   resolved "https://registry.yarnpkg.com/react/-/react-16.7.0-alpha.0.tgz#e2ed4abe6f268c9b092a1d1e572953684d1783a9"
