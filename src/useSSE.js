@@ -1,7 +1,7 @@
 import { useContext, useState, useEffect } from 'react';
 import { SSEContext } from './SSEContext';
 
-export const useSSESubscription = (
+export const useSSE = (
   eventName,
   {
     initialState = null,

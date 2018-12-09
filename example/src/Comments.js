@@ -1,9 +1,9 @@
 import React from 'react';
 // import PropTypes from 'prop-types';
-import { useSSESubscription } from 'react-hook-sse';
+import { useSSE } from 'react-hook-sse';
 
 const Comments = () => {
-  const last = useSSESubscription('comments');
+  const last = useSSE('comments');
 
   return (
     <p>

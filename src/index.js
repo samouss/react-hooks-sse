@@ -1,2 +1,2 @@
 export * from './SSEContext';
-export * from './useSSESubscription';
+export * from './useSSE';
