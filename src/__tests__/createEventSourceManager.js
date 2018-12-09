@@ -90,6 +90,60 @@ describe('createEventSourceManager', () => {
   });
 
   describe('removeEventListener', () => {
-    it('expect to ', () => {});
+    it('expect to remove a listener on a source with the provided arguments', () => {
+      const event = 'event';
+      const listener = () => {};
+      const manager = createEventSourceManager({
+        ...defaultOptions,
+      });
+
+      manager.addEventListener(event, listener);
+
+      const { source } = manager.getState();
+
+      manager.removeEventListener(event, listener);
+
+      expect(source.removeEventListener).toHaveBeenCalledWith(event, listener);
+    });
+
+    it('expect to close the source if the listener is the last one of all events', () => {
+      const event = 'event';
+      const listener = () => {};
+
+      const manager = createEventSourceManager({
+        ...defaultOptions,
+      });
+
+      manager.addEventListener(event, listener);
+
+      const { source } = manager.getState();
+
+      manager.removeEventListener(event, listener);
+
+      expect(source.close).toHaveBeenCalled();
+      expect(manager.getState().source).toBe(null);
+    });
+
+    it('expect to not close the source if the listener is the last of one of the events', () => {
+      const event0 = 'event0';
+      const listener0 = () => {};
+
+      const event1 = 'event';
+      const listener1 = () => {};
+
+      const manager = createEventSourceManager({
+        ...defaultOptions,
+      });
+
+      manager.addEventListener(event0, listener0);
+      manager.addEventListener(event1, listener1);
+
+      const { source } = manager.getState();
+
+      manager.removeEventListener(event0, listener0);
+
+      expect(source.close).not.toHaveBeenCalled();
+      expect(manager.getState().source).toBe(source);
+    });
   });
 });

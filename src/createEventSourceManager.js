@@ -26,11 +26,11 @@ export const createEventSourceManager = ({ endpoint, options = {} }) => {
 
       listeners.delete(listener);
 
+      state.source.removeEventListener(name, listener);
+
       if (!listeners.size) {
         state.listenersByName.delete(name);
       }
-
-      state.source.removeEventListener(name, listener);
 
       if (!state.listenersByName.size) {
         state.source.close();
