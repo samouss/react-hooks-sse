@@ -8,8 +8,8 @@
   "private": true,
   "scripts": {
     "build": "yarn build:cjs && yarn build:esm && yarn build:umd",
-    "build:cjs": "babel src --out-dir dist/cjs",
-    "build:esm": "BABEL_ENV=esm babel src --out-dir dist/es",
+    "build:cjs": "babel src --out-dir dist/cjs --ignore 'src/**/*.test.js'",
+    "build:esm": "BABEL_ENV=esm babel src --out-dir dist/es --ignore 'src/**/*.test.js'",
     "build:umd": "BABEL_ENV=esm rollup -c rollup.config.js",
     "watch": "yarn build:cjs --watch",
     "lint": "eslint src",
