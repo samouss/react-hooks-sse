@@ -1837,10 +1837,10 @@ eslint-plugin-prettier@3.0.0:
   dependencies:
     prettier-linter-helpers "^1.0.0"
 
-eslint-plugin-react@7.11.0:
-  version "7.11.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-react/-/eslint-plugin-react-7.11.0.tgz#b3124af974c4da978e62a57ea49a7bc26f11e76d"
-  integrity sha512-SJOh2p3Mr1nbp/Nd5odTuSn2rvaMvO5DaOpuAGc9Sc+Gcxqkyffb1mqQGIKB9tWQJlvrfsrzWnMJexZJ7YRDUw==
+eslint-plugin-react@7.11.1:
+  version "7.11.1"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-react/-/eslint-plugin-react-7.11.1.tgz#c01a7af6f17519457d6116aa94fc6d2ccad5443c"
+  integrity sha512-cVVyMadRyW7qsIUh3FHp3u6QHNhOgVrLQYdQEB1bPWBsgbNCHdFAeNMquBMCcZJu59eNthX053L70l7gRt4SCw==
   dependencies:
     array-includes "^3.0.3"
     doctrine "^2.1.0"
