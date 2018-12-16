@@ -1,5 +1,4 @@
 import React from 'react';
-// import PropTypes from 'prop-types';
 import { useSSE } from 'react-hooks-sse';
 
 const Likes = () => {
