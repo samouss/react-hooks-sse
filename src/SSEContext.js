@@ -1,5 +1,5 @@
 import { createElement, createContext, useState } from 'react';
-import { string, bool, shape } from 'prop-types';
+import PropTypes from 'prop-types';
 import { createSourceManager } from './createSourceManager';
 
 export const SSEContext = createContext(null);
@@ -21,9 +21,9 @@ export const SSEProvider = ({ endpoint, options, ...props }) => {
 };
 
 SSEProvider.propTypes = {
-  endpoint: string.isRequired,
-  options: shape({
-    withCredentials: bool.isRequired,
+  endpoint: PropTypes.string.isRequired,
+  options: PropTypes.shape({
+    withCredentials: PropTypes.bool.isRequired,
   }),
 };
 
