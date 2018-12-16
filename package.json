@@ -1,5 +1,5 @@
 {
-  "name": "react-hook-sse",
+  "name": "react-hooks-sse",
   "version": "1.0.0",
   "description": "React Hook for SSE",
   "main": "dist/cjs/index.js",

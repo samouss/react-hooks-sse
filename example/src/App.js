@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SSEProvider } from 'react-hook-sse';
+import { SSEProvider } from 'react-hooks-sse';
 import Likes from './Likes';
 import Comments from './Comments';
 import './App.css';
