@@ -5,7 +5,6 @@
   "main": "dist/cjs/index.js",
   "module": "dist/es/index.js",
   "license": "MIT",
-  "private": true,
   "files": [
     "dist",
     "src",
