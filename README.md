@@ -14,7 +14,7 @@ yarn add react-hooks-sse
 import React from 'react';
 import { useSSE, SSEProvider } from 'react-hooks-sse';
 
-const Likes = () => {
+const Comments = () => {
   const state = useSSE('comments');
 
   return state ? state.data.value : '...';
@@ -23,7 +23,7 @@ const Likes = () => {
 const App = () => (
   <SSEProvider endpoint="https://sse.example.com">
     <h1>Subscribe & update to SSE event</h1>
-    <Likes />
+    <Comments />
   </SSEProvider>
 );
 ```
