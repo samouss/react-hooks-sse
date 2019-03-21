@@ -11,7 +11,7 @@ export const useSSE = (
   } = {}
 ) => {
   const source = useContext(context);
-  const [value, dispatch] = useReducer(stateReducer, initialState);
+  const [state, dispatch] = useReducer(stateReducer, initialState);
 
   useEffect(() => {
     const listener = event => {
@@ -30,5 +30,5 @@ export const useSSE = (
     };
   }, []);
 
-  return value;
+  return state;
 };
