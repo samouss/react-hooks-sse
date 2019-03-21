@@ -1,5 +1,5 @@
 import { createElement, createContext } from 'react';
-import TestRenderer from 'react-test-renderer';
+import TestRenderer, { act } from 'react-test-renderer';
 import { useSSE } from '../useSSE';
 
 describe('useSSE', () => {
@@ -67,12 +67,14 @@ describe('useSSE', () => {
       const source = createFakeSource();
       const context = createFakeContext(source);
 
-      TestRenderer.create(
-        createElement(FakeApp, {
-          eventName,
-          context,
-        })
-      );
+      act(() => {
+        TestRenderer.create(
+          createElement(FakeApp, {
+            eventName,
+            context,
+          })
+        );
+      });
 
       expect(source.addEventListener).toHaveBeenCalledTimes(1);
       expect(source.addEventListener).toHaveBeenCalledWith(
@@ -85,6 +87,7 @@ describe('useSSE', () => {
       const eventName = 'push';
       const source = createFakeSource();
       const context = createFakeContext(source);
+      const renderer = TestRenderer.create();
       const mockCreateElement = jest.fn(() =>
         createElement(FakeApp, {
           eventName,
@@ -94,14 +97,18 @@ describe('useSSE', () => {
 
       const createFakeApp = () => mockCreateElement();
 
-      const renderer = TestRenderer.create(createFakeApp());
+      act(() => {
+        renderer.update(createFakeApp());
+      });
 
       expect(mockCreateElement).toHaveBeenCalledTimes(1);
       expect(source.addEventListener).toHaveBeenCalledTimes(1);
 
-      renderer.update(createFakeApp());
-      renderer.update(createFakeApp());
-      renderer.update(createFakeApp());
+      act(() => {
+        renderer.update(createFakeApp());
+        renderer.update(createFakeApp());
+        renderer.update(createFakeApp());
+      });
 
       expect(mockCreateElement).toHaveBeenCalledTimes(4);
       expect(source.addEventListener).toHaveBeenCalledTimes(1);
@@ -111,14 +118,20 @@ describe('useSSE', () => {
       const eventName = 'push';
       const source = createFakeSource();
       const context = createFakeContext(source);
-      const renderer = TestRenderer.create(
-        createElement(FakeApp, {
-          eventName,
-          context,
-        })
-      );
+      const renderer = TestRenderer.create();
 
-      renderer.unmount();
+      act(() => {
+        renderer.update(
+          createElement(FakeApp, {
+            eventName,
+            context,
+          })
+        );
+      });
+
+      act(() => {
+        renderer.unmount();
+      });
 
       expect(source.removeEventListener).toHaveBeenCalledTimes(1);
       expect(source.removeEventListener).toHaveBeenCalledWith(
@@ -142,20 +155,24 @@ describe('useSSE', () => {
       const source = createFakeSource();
       const context = createFakeContext(source);
 
-      TestRenderer.create(
-        createElement(FakeApp, {
-          eventName,
-          initialState,
-          children,
-          context,
-        })
-      );
+      act(() => {
+        TestRenderer.create(
+          createElement(FakeApp, {
+            eventName,
+            initialState,
+            children,
+            context,
+          })
+        );
+      });
 
-      // Simulate SSE server
-      source.simulate(eventName, {
-        data: JSON.stringify({
-          value: 'earth',
-        }),
+      act(() => {
+        // Simulate SSE server
+        source.simulate(eventName, {
+          data: JSON.stringify({
+            value: 'earth',
+          }),
+        });
       });
 
       expect(children).toHaveBeenLastCalledWith(
@@ -176,19 +193,23 @@ describe('useSSE', () => {
       const source = createFakeSource();
       const context = createFakeContext(source);
 
-      TestRenderer.create(
-        createElement(FakeApp, {
-          eventName,
-          initialState,
-          parser,
-          children,
-          context,
-        })
-      );
+      act(() => {
+        TestRenderer.create(
+          createElement(FakeApp, {
+            eventName,
+            initialState,
+            parser,
+            children,
+            context,
+          })
+        );
+      });
 
-      // Simulate SSE server
-      source.simulate(eventName, {
-        data: '10',
+      act(() => {
+        // Simulate SSE server
+        source.simulate(eventName, {
+          data: '10',
+        });
       });
 
       expect(children).toHaveBeenLastCalledWith(
@@ -205,19 +226,23 @@ describe('useSSE', () => {
       const source = createFakeSource();
       const context = createFakeContext(source);
 
-      TestRenderer.create(
-        createElement(FakeApp, {
-          eventName,
-          stateReducer,
-          context,
-        })
-      );
+      act(() => {
+        TestRenderer.create(
+          createElement(FakeApp, {
+            eventName,
+            stateReducer,
+            context,
+          })
+        );
+      });
 
-      // Simulate SSE server
-      source.simulate(eventName, {
-        data: JSON.stringify({
-          value: 10,
-        }),
+      act(() => {
+        // Simulate SSE server
+        source.simulate(eventName, {
+          data: JSON.stringify({
+            value: 10,
+          }),
+        });
       });
 
       expect(stateReducer).toHaveBeenLastCalledWith(null, {
@@ -231,11 +256,13 @@ describe('useSSE', () => {
         },
       });
 
-      // Simulate SSE server
-      source.simulate(eventName, {
-        data: JSON.stringify({
-          value: 20,
-        }),
+      act(() => {
+        // Simulate SSE server
+        source.simulate(eventName, {
+          data: JSON.stringify({
+            value: 20,
+          }),
+        });
       });
 
       expect(stateReducer).toHaveBeenLastCalledWith(
@@ -269,19 +296,23 @@ describe('useSSE', () => {
       const source = createFakeSource();
       const context = createFakeContext(source);
 
-      TestRenderer.create(
-        createElement(FakeApp, {
-          eventName,
-          children,
-          context,
-        })
-      );
+      act(() => {
+        TestRenderer.create(
+          createElement(FakeApp, {
+            eventName,
+            children,
+            context,
+          })
+        );
+      });
 
-      // Simulate SSE server
-      source.simulate(eventName, {
-        data: JSON.stringify({
-          value: 10,
-        }),
+      act(() => {
+        // Simulate SSE server
+        source.simulate(eventName, {
+          data: JSON.stringify({
+            value: 10,
+          }),
+        });
       });
 
       expect(children).toHaveBeenLastCalledWith(
@@ -310,26 +341,30 @@ describe('useSSE', () => {
       const source = createFakeSource();
       const context = createFakeContext(source);
 
-      TestRenderer.create(
-        createElement(FakeApp, {
-          eventName,
-          initialState,
-          stateReducer,
-          children,
-          context,
-        })
-      );
+      act(() => {
+        TestRenderer.create(
+          createElement(FakeApp, {
+            eventName,
+            initialState,
+            stateReducer,
+            children,
+            context,
+          })
+        );
+      });
 
       expect(children).toHaveBeenLastCalledWith({
         value: 'first',
         previous: null,
       });
 
-      // Simulate SSE server
-      source.simulate(eventName, {
-        data: JSON.stringify({
-          value: 'second',
-        }),
+      act(() => {
+        // Simulate SSE server
+        source.simulate(eventName, {
+          data: JSON.stringify({
+            value: 'second',
+          }),
+        });
       });
 
       expect(children).toHaveBeenLastCalledWith({
