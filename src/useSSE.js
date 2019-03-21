@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useReducer, useEffect } from 'react';
 import { SSEContext } from './SSEContext';
 
 export const useSSE = (
@@ -11,18 +11,16 @@ export const useSSE = (
   } = {}
 ) => {
   const source = useContext(context);
-  const [value, setValue] = useState(initialState);
+  const [value, dispatch] = useReducer(stateReducer, initialState);
 
   useEffect(() => {
     const listener = event => {
       const data = parser(event.data);
 
-      setValue(previousValue =>
-        stateReducer(previousValue, {
-          event,
-          data,
-        })
-      );
+      dispatch({
+        event,
+        data,
+      });
     };
 
     source.addEventListener(eventName, listener);
