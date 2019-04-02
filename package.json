@@ -52,7 +52,7 @@
     "eslint-plugin-react": "7.12.4",
     "express": "4.16.4",
     "jest": "24.6.0",
-    "jest-watch-typeahead": "0.2.1",
+    "jest-watch-typeahead": "0.3.0",
     "prettier": "1.16.4",
     "react": "16.8.6",
     "react-test-renderer": "16.8.6",
