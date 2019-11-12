@@ -15,7 +15,10 @@ describe('useSSE', () => {
       removeEventListener: jest.fn((name, listener) => {
         const listeners = state.get(name);
 
-        state.set(name, listeners.filter(x => x !== listener));
+        state.set(
+          name,
+          listeners.filter(x => x !== listener)
+        );
       }),
       simulate: (eventName, value) =>
         state.get(eventName).forEach(listener => listener(value)),
