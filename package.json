@@ -36,10 +36,10 @@
     "prop-types": "^15.6.2"
   },
   "devDependencies": {
-    "@babel/cli": "7.7.5",
-    "@babel/core": "7.7.5",
+    "@babel/cli": "7.7.7",
+    "@babel/core": "7.7.7",
     "@babel/plugin-transform-runtime": "7.7.6",
-    "@babel/preset-env": "7.7.6",
+    "@babel/preset-env": "7.7.7",
     "babel-core": "7.0.0-bridge.0",
     "babel-jest": "24.9.0",
     "cors": "2.8.5",
