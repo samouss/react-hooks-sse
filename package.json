@@ -61,7 +61,7 @@
     "rollup-plugin-commonjs": "10.1.0",
     "rollup-plugin-node-resolve": "5.2.0",
     "rollup-plugin-terser": "4.0.4",
-    "uuid": "3.4.0"
+    "uuid": "7.0.2"
   },
   "peerDependencies": {
     "react": ">= 16.7.0-alpha.0"
