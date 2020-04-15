@@ -1,4 +1,4 @@
-const run = (value: string): void => {
+const run = (value: string) => {
   console.log(`'Hello ${value}!`);
 };
 

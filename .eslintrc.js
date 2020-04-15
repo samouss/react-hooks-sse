@@ -1,18 +1,18 @@
 module.exports = {
-  extends: ['airbnb', 'prettier'],
-  env: {
-    browser: true,
-    jest: true,
-  },
+  root: true,
+  env: { browser: true, jest: true },
   plugins: ['prettier'],
-  rules: {
-    'import/prefer-default-export': 0,
-    'prettier/prettier': 'error',
-    'react/jsx-filename-extension': [
-      1,
-      {
-        extensions: ['.js', '.jsx'],
+  extends: ['airbnb', 'prettier'],
+  overrides: [
+    {
+      files: ['*.ts'],
+      parser: '@typescript-eslint/parser',
+      parserOptions: { project: './tsconfig.json' },
+      plugins: ['@typescript-eslint', 'prettier'],
+      extends: ['airbnb-typescript', 'prettier', 'prettier/@typescript-eslint'],
+      rules: {
+        'import/prefer-default-export': 0,
       },
-    ],
-  },
+    },
+  ],
 };
