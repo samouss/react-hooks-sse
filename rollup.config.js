@@ -5,7 +5,7 @@ import { terser } from 'rollup-plugin-terser';
 
 const clean = x => x.filter(Boolean);
 const configuration = ({ minify }) => ({
-  input: 'src/index.js',
+  input: 'src/index.ts',
   output: {
     file: `dist/umd/ReactHookSSE${minify ? '.min' : ''}.js`,
     format: 'umd',
@@ -19,9 +19,12 @@ const configuration = ({ minify }) => ({
   plugins: clean([
     babel({
       exclude: 'node_modules/**',
+      extensions: ['.ts'],
       runtimeHelpers: true,
     }),
-    resolve(),
+    resolve({
+      extensions: ['.ts'],
+    }),
     commonjs({
       namedExports: {
         react: [
