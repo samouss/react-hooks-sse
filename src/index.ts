@@ -1,5 +1,3 @@
-const run = (value: string) => {
-  console.log(`'Hello ${value}!`);
+export const add = (x: number, y: number) => {
+  return x + y;
 };
-
-run('TypeScript');
