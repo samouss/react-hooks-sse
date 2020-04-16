@@ -13,7 +13,7 @@ describe('SSEContext', () => {
   };
 
   beforeEach(() => {
-    createSourceManager.mockReset();
+    (createSourceManager as jest.Mock).mockReset();
   });
 
   it('expect to create a source manager with default options', () => {
@@ -69,7 +69,7 @@ describe('SSEContext', () => {
   it('expect to expose a source manager through the context', () => {
     const manager = {};
 
-    createSourceManager.mockImplementationOnce(() => manager);
+    (createSourceManager as jest.Mock).mockImplementationOnce(() => manager);
 
     TestRenderer.create(
       createElement(
@@ -77,8 +77,11 @@ describe('SSEContext', () => {
         {
           ...defaultOptions,
         },
-        createElement(SSEConsumer, {}, exposed => {
-          expect(exposed).toBe(manager);
+        createElement(SSEConsumer, {
+          children(context) {
+            expect(context).toBe(manager);
+            return null;
+          },
         })
       )
     );
