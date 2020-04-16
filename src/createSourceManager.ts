@@ -5,12 +5,21 @@ type State = {
   listenersByName: Map<string, Set<Listener>>;
 };
 
-type Options = {
+export type SourceManagerOptions = {
   endpoint: string;
   options?: EventSourceInit;
 };
 
-export const createSourceManager = ({ endpoint, options = {} }: Options) => {
+export type SourceManager = {
+  getState(): State;
+  addEventListener(name: string, listener: Listener): void;
+  removeEventListener(name: string, listener: Listener): void;
+};
+
+export const createSourceManager = ({
+  endpoint,
+  options = {},
+}: SourceManagerOptions): SourceManager => {
   const state: State = {
     source: null,
     listenersByName: new Map(),
@@ -20,7 +29,7 @@ export const createSourceManager = ({ endpoint, options = {} }: Options) => {
     getState() {
       return state;
     },
-    addEventListener(name: string, listener: Listener) {
+    addEventListener(name, listener) {
       if (!state.listenersByName.size) {
         state.source = new window.EventSource(endpoint, options);
       }
@@ -37,7 +46,7 @@ export const createSourceManager = ({ endpoint, options = {} }: Options) => {
 
       state.source.addEventListener(name, listener);
     },
-    removeEventListener(name: string, listener: Listener) {
+    removeEventListener(name, listener) {
       if (!state.source) {
         throw new Error("The source doesn't exist");
       }
