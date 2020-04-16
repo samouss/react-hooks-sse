@@ -1,5 +1,17 @@
-export const createSourceManager = ({ endpoint, options = {} }) => {
-  const state = {
+type Listener = () => void;
+
+type State = {
+  source: EventSource | null;
+  listenersByName: Map<string, Set<Listener>>;
+};
+
+type Options = {
+  endpoint: string;
+  options?: EventSourceInit;
+};
+
+export const createSourceManager = ({ endpoint, options = {} }: Options) => {
+  const state: State = {
     source: null,
     listenersByName: new Map(),
   };
@@ -8,9 +20,13 @@ export const createSourceManager = ({ endpoint, options = {} }) => {
     getState() {
       return state;
     },
-    addEventListener(name, listener) {
+    addEventListener(name: string, listener: Listener) {
       if (!state.listenersByName.size) {
         state.source = new window.EventSource(endpoint, options);
+      }
+
+      if (!state.source) {
+        throw new Error("The source doesn't exist");
       }
 
       const listeners = state.listenersByName.get(name) || new Set();
@@ -21,16 +37,20 @@ export const createSourceManager = ({ endpoint, options = {} }) => {
 
       state.source.addEventListener(name, listener);
     },
-    removeEventListener(name, listener) {
+    removeEventListener(name: string, listener: Listener) {
+      if (!state.source) {
+        throw new Error("The source doesn't exist");
+      }
+
       const listeners = state.listenersByName.get(name) || new Set();
 
       listeners.delete(listener);
 
-      state.source.removeEventListener(name, listener);
-
       if (!listeners.size) {
         state.listenersByName.delete(name);
       }
+
+      state.source.removeEventListener(name, listener);
 
       if (!state.listenersByName.size) {
         state.source.close();
