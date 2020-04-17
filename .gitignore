@@ -7,5 +7,6 @@ yarn-error.log*
 *.tgz
 
 .eslintcache
+.vscode/
 node_modules/
 dist/
