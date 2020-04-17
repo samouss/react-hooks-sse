@@ -20,7 +20,7 @@
     "build": "yarn type-check && yarn build:cjs && yarn build:esm && yarn build:umd",
     "build:cjs": "babel src --out-dir dist/cjs --extensions .ts --ignore 'src/**/__mocks__/**/*','src/**/__tests__/**/*'",
     "build:esm": "BABEL_ENV=esm babel src --out-dir dist/es --extensions .ts --ignore 'src/**/__mocks__/**/*','src/**/__tests__/**/*'",
-    "build:umd": "BABEL_ENV=esm rollup -c rollup.config.js",
+    "build:umd": "BABEL_ENV=rollup rollup -c rollup.config.js",
     "watch": "yarn build:cjs --watch",
     "lint": "eslint src --ext .ts",
     "lint:fix": "yarn lint --fix",

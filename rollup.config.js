@@ -20,7 +20,6 @@ const configuration = ({ minify }) => ({
     babel({
       exclude: 'node_modules/**',
       extensions: ['.ts'],
-      runtimeHelpers: true,
     }),
     resolve({
       extensions: ['.ts'],
