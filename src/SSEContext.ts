@@ -1,5 +1,4 @@
 import { FC, createElement, createContext, useState } from 'react';
-import PropTypes from 'prop-types';
 import {
   SourceManager,
   SourceManagerOptions,
@@ -29,13 +28,6 @@ export const SSEProvider: FC<SourceManagerOptions> = ({
     },
     children
   );
-};
-
-SSEProvider.propTypes = {
-  endpoint: PropTypes.string.isRequired,
-  options: PropTypes.shape({
-    withCredentials: PropTypes.bool.isRequired,
-  }),
 };
 
 SSEProvider.defaultProps = {
