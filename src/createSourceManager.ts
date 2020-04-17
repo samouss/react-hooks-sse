@@ -1,9 +1,4 @@
-type Listener = () => void;
-
-type State = {
-  source: EventSource | null;
-  listenersByName: Map<string, Set<Listener>>;
-};
+export type Listener = (event: MessageEvent) => void;
 
 export type SourceManagerOptions = {
   endpoint: string;
@@ -14,6 +9,11 @@ export type SourceManager = {
   getState(): State;
   addEventListener(name: string, listener: Listener): void;
   removeEventListener(name: string, listener: Listener): void;
+};
+
+type State = {
+  source: EventSource | null;
+  listenersByName: Map<string, Set<Listener>>;
 };
 
 export const createSourceManager = ({
@@ -44,6 +44,10 @@ export const createSourceManager = ({
 
       state.listenersByName.set(name, listeners);
 
+      // @ts-ignore The TypeScript definition for `addEventListener` on `EventSource`
+      // is icomplete. The function should be able to accept a string AND receive
+      // a MessageEvent.
+      // https://html.spec.whatwg.org/multipage/server-sent-events.html
       state.source.addEventListener(name, listener);
     },
     removeEventListener(name, listener) {
@@ -59,6 +63,10 @@ export const createSourceManager = ({
         state.listenersByName.delete(name);
       }
 
+      // @ts-ignore The TypeScript definition for `addEventListener` on `EventSource`
+      // is icomplete. The function should be able to accept a string AND receive
+      // a MessageEvent.
+      // https://html.spec.whatwg.org/multipage/server-sent-events.html
       state.source.removeEventListener(name, listener);
 
       if (!state.listenersByName.size) {

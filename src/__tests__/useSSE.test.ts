@@ -1,79 +1,131 @@
-import { createElement, createContext } from 'react';
+import { FC, createElement, createContext } from 'react';
 import TestRenderer, { act } from 'react-test-renderer';
-import { useSSE } from '../useSSE';
+import { SourceManager } from '../createSourceManager';
+import { Options, useSSE } from '../useSSE';
+
+type SourceManagerMock = SourceManager & {
+  simulate(event: string, value: any): void;
+};
 
 describe('useSSE', () => {
-  const createFakeSource = () => {
-    const state = new Map();
+  const createFakeSource = (): SourceManagerMock => {
+    const state = new Map<string, Array<(...args: any[]) => void>>();
 
     return {
+      getState() {
+        // FIX
+        return {
+          source: null,
+          listenersByName: new Map(),
+        };
+      },
       addEventListener: jest.fn((name, listener) => {
         const listeners = state.get(name) || [];
 
         state.set(name, listeners.concat(listener));
       }),
       removeEventListener: jest.fn((name, listener) => {
-        const listeners = state.get(name);
+        const listeners = state.get(name) || [];
 
         state.set(
           name,
           listeners.filter(x => x !== listener)
         );
       }),
-      simulate: (eventName, value) =>
-        state.get(eventName).forEach(listener => listener(value)),
+      simulate: (eventName: string, value: any) => {
+        const listeners = state.get(eventName);
+        if (listeners) {
+          listeners.forEach(listener => listener(value));
+        }
+      },
     };
   };
 
-  const createFakeContext = source => createContext(source);
+  const createFakeContext = (source: SourceManagerMock) =>
+    createContext<SourceManager | null>(source);
 
-  const FakeApp = ({ eventName, children = () => {}, ...options }) => {
-    const state = useSSE(eventName, options);
+  type State = {
+    value: string;
+  };
+
+  type Props = Options<State> & {
+    eventName: string;
+    initialState: State;
+  };
+
+  const FakeApp: FC<Props> = ({
+    eventName,
+    initialState,
+    children,
+    ...options
+  }) => {
+    const state = useSSE(eventName, initialState, options);
+
+    if (!children || typeof children !== 'function') {
+      return null;
+    }
 
     return createElement('div', {}, children(state));
   };
 
-  it('expect to `useSSE` with the default options', () => {
-    const children = jest.fn();
-    const source = createFakeSource();
-    const context = createFakeContext(source);
+  it('expect to throw an error outside of `SSEContext`', () => {
+    const eventName = 'push';
+    const initialState = {
+      value: 'Apple',
+    };
 
-    TestRenderer.create(
-      createElement(FakeApp, {
-        children,
-        context,
-      })
+    expect(() =>
+      TestRenderer.create(
+        createElement(FakeApp, {
+          eventName,
+          initialState,
+        })
+      )
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Could not find an SSE context; You have to wrap useSSE() in a <SSEProvider>."`
     );
-
-    expect(children).toHaveBeenCalledWith(null);
   });
 
-  it('expect to `useSSE` with the provided `initialState`', () => {
-    const children = jest.fn();
+  it('expect to `useSSE` with the default options', () => {
     const source = createFakeSource();
     const context = createFakeContext(source);
+    const children = jest.fn();
+    const eventName = 'push';
+    const initialState = {
+      value: 'Apple',
+    };
 
     TestRenderer.create(
-      createElement(FakeApp, {
-        initialState: 10,
-        children,
-        context,
-      })
+      createElement(
+        FakeApp,
+        {
+          eventName,
+          initialState,
+          context,
+        },
+        children
+      )
     );
 
-    expect(children).toHaveBeenCalledWith(10);
+    expect(children).toHaveBeenCalledWith({
+      value: 'Apple',
+    });
   });
 
   describe('subscription', () => {
     it('expect to register a listener on mount', () => {
-      const eventName = 'push';
       const source = createFakeSource();
       const context = createFakeContext(source);
+      const eventName = 'push';
+      const initialState = {
+        value: 'Apple',
+      };
 
       act(() => {
         TestRenderer.create(
           createElement(FakeApp, {
             eventName,
+            initialState,
             context,
           })
         );
@@ -87,13 +139,18 @@ describe('useSSE', () => {
     });
 
     it('expect to not register a listener on update', () => {
-      const eventName = 'push';
       const source = createFakeSource();
       const context = createFakeContext(source);
-      const renderer = TestRenderer.create();
+      const eventName = 'push';
+      const initialState = {
+        value: 'Apple',
+      };
+
+      const renderer = TestRenderer.create(createElement('div'));
       const mockCreateElement = jest.fn(() =>
         createElement(FakeApp, {
           eventName,
+          initialState,
           context,
         })
       );
@@ -118,15 +175,19 @@ describe('useSSE', () => {
     });
 
     it('expect to remove the listener on unmount', () => {
-      const eventName = 'push';
       const source = createFakeSource();
       const context = createFakeContext(source);
-      const renderer = TestRenderer.create();
+      const renderer = TestRenderer.create(createElement('div'));
+      const eventName = 'push';
+      const initialState = {
+        value: 'Apple',
+      };
 
       act(() => {
         renderer.update(
           createElement(FakeApp, {
             eventName,
+            initialState,
             context,
           })
         );
@@ -146,26 +207,25 @@ describe('useSSE', () => {
 
   describe('updater', () => {
     it('expect to parse the value with the default JSON parser', () => {
-      const eventName = 'push';
-      const children = jest.fn();
-
-      const initialState = {
-        data: {
-          value: null,
-        },
-      };
-
       const source = createFakeSource();
       const context = createFakeContext(source);
+      const children = jest.fn();
+      const eventName = 'push';
+      const initialState = {
+        value: 'Apple',
+      };
 
       act(() => {
         TestRenderer.create(
-          createElement(FakeApp, {
-            eventName,
-            initialState,
-            children,
-            context,
-          })
+          createElement(
+            FakeApp,
+            {
+              eventName,
+              initialState,
+              context,
+            },
+            children
+          )
         );
       });
 
@@ -173,66 +233,74 @@ describe('useSSE', () => {
         // Simulate SSE server
         source.simulate(eventName, {
           data: JSON.stringify({
-            value: 'earth',
+            value: 'iPhone',
           }),
         });
       });
 
-      expect(children).toHaveBeenLastCalledWith(
-        expect.objectContaining({
-          data: {
-            value: 'earth',
-          },
-        })
-      );
+      expect(children).toHaveBeenLastCalledWith({
+        value: 'iPhone',
+      });
     });
 
-    it('expect to parse the value with a provided parser', () => {
-      const eventName = 'push';
-      const children = jest.fn();
-      const initialState = { data: 5 };
-      const parser = x => parseInt(x, 10);
-
+    it('expect to parse the value with the given parser', () => {
       const source = createFakeSource();
       const context = createFakeContext(source);
+      const children = jest.fn();
+      const eventName = 'push';
+      const initialState = {
+        value: 'Apple',
+      };
+
+      const parser = (input: any) => {
+        const data = JSON.parse(input);
+        data.value += ' XS';
+        return data;
+      };
 
       act(() => {
         TestRenderer.create(
-          createElement(FakeApp, {
-            eventName,
-            initialState,
-            parser,
-            children,
-            context,
-          })
+          createElement(
+            FakeApp,
+            {
+              eventName,
+              initialState,
+              parser,
+              context,
+            },
+            children
+          )
         );
       });
 
       act(() => {
         // Simulate SSE server
         source.simulate(eventName, {
-          data: '10',
+          data: JSON.stringify({
+            value: 'iPhone',
+          }),
         });
       });
 
-      expect(children).toHaveBeenLastCalledWith(
-        expect.objectContaining({
-          data: 10,
-        })
-      );
+      expect(children).toHaveBeenLastCalledWith({
+        value: 'iPhone XS',
+      });
     });
 
     it('expect to call the stateReducer with state, data and event', () => {
-      const eventName = 'push';
-      const stateReducer = jest.fn((state, action) => action);
-
       const source = createFakeSource();
       const context = createFakeContext(source);
+      const eventName = 'push';
+      const stateReducer = jest.fn((_, action) => action);
+      const initialState = {
+        value: 'Apple',
+      };
 
       act(() => {
         TestRenderer.create(
           createElement(FakeApp, {
             eventName,
+            initialState,
             stateReducer,
             context,
           })
@@ -243,27 +311,32 @@ describe('useSSE', () => {
         // Simulate SSE server
         source.simulate(eventName, {
           data: JSON.stringify({
-            value: 10,
+            value: 'Apple',
           }),
         });
       });
 
-      expect(stateReducer).toHaveBeenLastCalledWith(null, {
-        data: {
-          value: 10,
+      expect(stateReducer).toHaveBeenLastCalledWith(
+        {
+          value: 'Apple',
         },
-        event: {
-          data: JSON.stringify({
-            value: 10,
-          }),
-        },
-      });
+        {
+          data: {
+            value: 'Apple',
+          },
+          event: {
+            data: JSON.stringify({
+              value: 'Apple',
+            }),
+          },
+        }
+      );
 
       act(() => {
         // Simulate SSE server
         source.simulate(eventName, {
           data: JSON.stringify({
-            value: 20,
+            value: 'Apple iPhone XS',
           }),
         });
       });
@@ -271,21 +344,21 @@ describe('useSSE', () => {
       expect(stateReducer).toHaveBeenLastCalledWith(
         {
           data: {
-            value: 10,
+            value: 'Apple',
           },
           event: {
             data: JSON.stringify({
-              value: 10,
+              value: 'Apple',
             }),
           },
         },
         {
           data: {
-            value: 20,
+            value: 'Apple iPhone XS',
           },
           event: {
             data: JSON.stringify({
-              value: 20,
+              value: 'Apple iPhone XS',
             }),
           },
         }
@@ -293,19 +366,25 @@ describe('useSSE', () => {
     });
 
     it('expect to return the value from the default stateReducer', () => {
-      const eventName = 'push';
-      const children = jest.fn();
-
       const source = createFakeSource();
       const context = createFakeContext(source);
+      const children = jest.fn();
+      const eventName = 'push';
+      const initialState = {
+        value: 'Apple',
+      };
 
       act(() => {
         TestRenderer.create(
-          createElement(FakeApp, {
-            eventName,
-            children,
-            context,
-          })
+          createElement(
+            FakeApp,
+            {
+              eventName,
+              initialState,
+              context,
+            },
+            children
+          )
         );
       });
 
@@ -313,30 +392,25 @@ describe('useSSE', () => {
         // Simulate SSE server
         source.simulate(eventName, {
           data: JSON.stringify({
-            value: 10,
+            value: 'Apple iPhone',
           }),
         });
       });
 
-      expect(children).toHaveBeenLastCalledWith(
-        expect.objectContaining({
-          data: {
-            value: 10,
-          },
-        })
-      );
+      expect(children).toHaveBeenLastCalledWith({
+        value: 'Apple iPhone',
+      });
     });
 
-    it('expect to return the value from the provided stateReducer', () => {
-      const eventName = 'push';
+    it('expect to return the value from the given stateReducer', () => {
       const children = jest.fn();
-
+      const eventName = 'push';
       const initialState = {
         value: 'first',
         previous: null,
       };
 
-      const stateReducer = (state, action) => ({
+      const stateReducer = (state: any, action: any) => ({
         value: action.data.value,
         previous: state.value,
       });
@@ -346,13 +420,16 @@ describe('useSSE', () => {
 
       act(() => {
         TestRenderer.create(
-          createElement(FakeApp, {
-            eventName,
-            initialState,
-            stateReducer,
-            children,
-            context,
-          })
+          createElement(
+            FakeApp,
+            {
+              eventName,
+              initialState,
+              stateReducer,
+              context,
+            },
+            children
+          )
         );
       });
 
