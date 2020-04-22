@@ -74,6 +74,6 @@
     "typescript": "3.8.3"
   },
   "peerDependencies": {
-    "react": ">= 16.7.0-alpha.0"
+    "react": ">= 16.7.0"
   }
 }
