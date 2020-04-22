@@ -2,14 +2,16 @@ import React from 'react';
 import { useSSE } from 'react-hooks-sse';
 
 const Comments = () => {
-  const last = useSSE('comments');
+  const last = useSSE('comments', {
+    value: null,
+  });
 
   return (
     <p>
       <span role="img" aria-label="Comments">
         💬
       </span>{' '}
-      {last ? last.data.value : '...'}
+      {last.value ? last.value : '...'}
     </p>
   );
 };
