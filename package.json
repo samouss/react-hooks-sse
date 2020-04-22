@@ -4,6 +4,7 @@
   "description": "React Hook for SSE",
   "main": "dist/cjs/index.js",
   "module": "dist/es/index.js",
+  "types": "dist/typings/index.d.ts",
   "license": "MIT",
   "files": [
     "dist",
@@ -17,16 +18,17 @@
     "sse"
   ],
   "scripts": {
-    "build": "yarn type-check && yarn build:cjs && yarn build:esm && yarn build:umd",
+    "build": "yarn type-check && yarn build:typings && yarn build:cjs && yarn build:esm && yarn build:umd",
     "build:cjs": "babel src --out-dir dist/cjs --extensions .ts --ignore 'src/**/__mocks__/**/*','src/**/__tests__/**/*'",
     "build:esm": "BABEL_ENV=esm babel src --out-dir dist/es --extensions .ts --ignore 'src/**/__mocks__/**/*','src/**/__tests__/**/*'",
     "build:umd": "BABEL_ENV=rollup rollup -c rollup.config.js",
+    "build:typings": "yarn type-check --project tsconfig.typings.json",
     "watch": "yarn build:cjs --watch",
     "lint": "eslint src --ext .ts",
     "lint:fix": "yarn lint --fix",
     "test": "jest",
     "test:watch": "yarn test --watch",
-    "type-check": "yarn tsc",
+    "type-check": "tsc",
     "type-check:watch": "yarn type-check --watch",
     "start:server": "node server.js",
     "start:example": "(cd example && yarn && yarn start)",
