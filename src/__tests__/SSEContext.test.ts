@@ -1,58 +1,59 @@
 import { createElement } from 'react';
 import TestRenderer from 'react-test-renderer';
-import { SSEProvider, SSEConsumer } from '../SSEContext';
 import { createSourceManager } from '../createSourceManager';
+import { SSEProvider, SSEConsumer } from '../SSEContext';
+import { Source } from '../source';
 
+// TODO
 jest.mock('../createSourceManager', () => ({
   createSourceManager: jest.fn(),
 }));
 
 describe('SSEContext', () => {
-  const defaultOptions = {
-    endpoint: 'http://localhost/sse',
+  // TODO
+  const createSourceMock = () => {
+    const instance = {
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+      close: jest.fn(),
+    };
+
+    return {
+      fn: jest.fn<Source, never>(() => instance),
+      instance,
+    };
   };
 
   beforeEach(() => {
     (createSourceManager as jest.Mock).mockReset();
   });
 
-  it('expect to create a source manager with default options', () => {
+  it('expect to create a source manager with `endpoint`', () => {
     TestRenderer.create(
       createElement(SSEProvider, {
-        ...defaultOptions,
+        endpoint: 'http://localhost/sse',
       })
     );
 
-    expect(createSourceManager).toHaveBeenCalledWith({
-      endpoint: 'http://localhost/sse',
-      options: {
-        withCredentials: false,
-      },
-    });
+    expect(createSourceManager).toHaveBeenCalledWith(expect.any(Function));
   });
 
-  it('expect to create a source manager with provided options', () => {
+  it('expect to create a source manager with `source`', () => {
+    const { fn } = createSourceMock();
+
     TestRenderer.create(
       createElement(SSEProvider, {
-        ...defaultOptions,
-        options: {
-          withCredentials: true,
-        },
+        source: fn,
       })
     );
 
-    expect(createSourceManager).toHaveBeenCalledWith({
-      endpoint: 'http://localhost/sse',
-      options: {
-        withCredentials: true,
-      },
-    });
+    expect(createSourceManager).toHaveBeenCalledWith(fn);
   });
 
   it('expect to create a source manager only once across render', () => {
     const createProviderElement = () =>
       createElement(SSEProvider, {
-        ...defaultOptions,
+        endpoint: 'http://localhost/sse',
       });
 
     const renderer = TestRenderer.create(createProviderElement());
@@ -75,7 +76,7 @@ describe('SSEContext', () => {
       createElement(
         SSEProvider,
         {
-          ...defaultOptions,
+          endpoint: 'http://localhost/sse',
         },
         createElement(SSEConsumer, {
           children(context) {
