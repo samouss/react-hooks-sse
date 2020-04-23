@@ -1,8 +1,8 @@
 import { useContext, useReducer, useEffect } from 'react';
-import { Listener } from './createSourceManager';
+import { Listener, Event } from './source';
 import { SSEContext } from './SSEContext';
 
-type Action<T> = { event: MessageEvent; data: T };
+type Action<T> = { event: Event; data: T };
 type StateReducer<S, T> = (state: S, changes: Action<T>) => S;
 type Parser<T> = (data: any) => T;
 
