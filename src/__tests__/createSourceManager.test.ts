@@ -14,16 +14,21 @@ describe('createSourceManager', () => {
       expect(fn).toHaveBeenCalledTimes(1);
     });
 
-    it('expect to create a listener on a source with the provided argument', () => {
-      // TODO: dispatch with a fake source
+    it('expect to create a listener on the source', () => {
       const { fn, source } = createSourceMock();
       const manager = createSourceManager(fn);
       const event = 'event';
-      const listener = () => {};
+      const listener = jest.fn();
 
       manager.addEventListener(event, listener);
 
-      expect(source.addEventListener).toHaveBeenCalledWith(event, listener);
+      expect(listener).toHaveBeenCalledTimes(0);
+
+      // Simulate SSE server
+      source.simulate('event', { data: 'Apple' });
+
+      expect(listener).toHaveBeenCalledTimes(1);
+      expect(listener).toHaveBeenCalledWith({ data: 'Apple' });
     });
 
     it('expect to create a source only once a listener is added', () => {
@@ -54,16 +59,22 @@ describe('createSourceManager', () => {
   });
 
   describe('removeEventListener', () => {
-    it('expect to remove a listener on a source with the provided arguments', () => {
+    it('expect to remove a listener on the source', () => {
       const { fn, source } = createSourceMock();
       const manager = createSourceManager(fn);
       const event = 'event';
-      const listener = () => {};
+      const listener = jest.fn();
 
       manager.addEventListener(event, listener);
+
+      // Simulate SSE server
+      source.simulate('event', { data: 'Apple' });
+
+      expect(listener).toHaveBeenCalledTimes(1);
+
       manager.removeEventListener(event, listener);
 
-      expect(source.removeEventListener).toHaveBeenCalledWith(event, listener);
+      expect(listener).toHaveBeenCalledTimes(1);
     });
 
     it('expect to close the source if the listener is the last one of all events', () => {
