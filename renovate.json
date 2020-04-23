@@ -1,6 +1,18 @@
 {
   "extends": [
-    "config:base"
+    "config:js-lib",
+    ":automergeMinor",
+    ":automergePr"
   ],
-  "automerge": true
+  "packageRules": [
+    {
+      "packagePatterns": [
+        "^@types"
+      ],
+      "depTypeList": [
+        "devDependencies"
+      ],
+      "rangeStrategy": "replace"
+    }
+  ]
 }
