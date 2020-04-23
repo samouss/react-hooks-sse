@@ -1,8 +1,8 @@
 import { createElement } from 'react';
 import TestRenderer from 'react-test-renderer';
+import { createSourceMock } from '../__mocks__/source.mock';
 import { createSourceManager } from '../createSourceManager';
 import { SSEProvider, SSEConsumer } from '../SSEContext';
-import { Source } from '../source';
 
 // TODO
 jest.mock('../createSourceManager', () => ({
@@ -10,20 +10,6 @@ jest.mock('../createSourceManager', () => ({
 }));
 
 describe('SSEContext', () => {
-  // TODO
-  const createSourceMock = () => {
-    const instance = {
-      addEventListener: jest.fn(),
-      removeEventListener: jest.fn(),
-      close: jest.fn(),
-    };
-
-    return {
-      fn: jest.fn<Source, never>(() => instance),
-      instance,
-    };
-  };
-
   beforeEach(() => {
     (createSourceManager as jest.Mock).mockReset();
   });
