@@ -1,40 +1,11 @@
 import { FC, createElement, createContext } from 'react';
 import TestRenderer, { act } from 'react-test-renderer';
+import { SourceMock, createSourceMock } from '../__mocks__/source.mock';
 import { SourceManager } from '../createSourceManager';
 import { Options, useSSE } from '../useSSE';
 
-type SourceManagerMock = SourceManager & {
-  simulate(event: string, value: any): void;
-};
-
 describe('useSSE', () => {
-  const createFakeSource = (): SourceManagerMock => {
-    const state = new Map<string, Array<(...args: any[]) => void>>();
-
-    return {
-      addEventListener: jest.fn((name, listener) => {
-        const listeners = state.get(name) || [];
-
-        state.set(name, listeners.concat(listener));
-      }),
-      removeEventListener: jest.fn((name, listener) => {
-        const listeners = state.get(name) || [];
-
-        state.set(
-          name,
-          listeners.filter(x => x !== listener)
-        );
-      }),
-      simulate: (eventName: string, value: any) => {
-        const listeners = state.get(eventName);
-        if (listeners) {
-          listeners.forEach(listener => listener(value));
-        }
-      },
-    };
-  };
-
-  const createFakeContext = (source: SourceManagerMock) =>
+  const createFakeContext = (source: SourceMock) =>
     createContext<SourceManager | null>(source);
 
   type State = {
@@ -80,7 +51,7 @@ describe('useSSE', () => {
   });
 
   it('expect to `useSSE` with the default options', () => {
-    const source = createFakeSource();
+    const { source } = createSourceMock();
     const context = createFakeContext(source);
     const children = jest.fn();
     const eventName = 'push';
@@ -107,7 +78,7 @@ describe('useSSE', () => {
 
   describe('subscription', () => {
     it('expect to register a listener on mount', () => {
-      const source = createFakeSource();
+      const { source } = createSourceMock();
       const context = createFakeContext(source);
       const eventName = 'push';
       const initialState = {
@@ -132,7 +103,7 @@ describe('useSSE', () => {
     });
 
     it('expect to not register a listener on update', () => {
-      const source = createFakeSource();
+      const { source } = createSourceMock();
       const context = createFakeContext(source);
       const eventName = 'push';
       const initialState = {
@@ -168,7 +139,7 @@ describe('useSSE', () => {
     });
 
     it('expect to remove the listener on unmount', () => {
-      const source = createFakeSource();
+      const { source } = createSourceMock();
       const context = createFakeContext(source);
       const renderer = TestRenderer.create(createElement('div'));
       const eventName = 'push';
@@ -200,7 +171,7 @@ describe('useSSE', () => {
 
   describe('updater', () => {
     it('expect to parse the value with the default JSON parser', () => {
-      const source = createFakeSource();
+      const { source } = createSourceMock();
       const context = createFakeContext(source);
       const children = jest.fn();
       const eventName = 'push';
@@ -237,7 +208,7 @@ describe('useSSE', () => {
     });
 
     it('expect to parse the value with the given parser', () => {
-      const source = createFakeSource();
+      const { source } = createSourceMock();
       const context = createFakeContext(source);
       const children = jest.fn();
       const eventName = 'push';
@@ -281,7 +252,7 @@ describe('useSSE', () => {
     });
 
     it('expect to call the stateReducer with state, data and event', () => {
-      const source = createFakeSource();
+      const { source } = createSourceMock();
       const context = createFakeContext(source);
       const eventName = 'push';
       const stateReducer = jest.fn((_, action) => action);
@@ -359,7 +330,7 @@ describe('useSSE', () => {
     });
 
     it('expect to return the value from the default stateReducer', () => {
-      const source = createFakeSource();
+      const { source } = createSourceMock();
       const context = createFakeContext(source);
       const children = jest.fn();
       const eventName = 'push';
@@ -408,7 +379,7 @@ describe('useSSE', () => {
         previous: state.value,
       });
 
-      const source = createFakeSource();
+      const { source } = createSourceMock();
       const context = createFakeContext(source);
 
       act(() => {
