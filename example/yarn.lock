@@ -8331,13 +8331,12 @@ react-error-overlay@^6.0.7:
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-6.0.7.tgz#1dcfb459ab671d53f660a991513cb2f0a0553108"
   integrity sha512-TAv1KJFh3RhqxNvhzxj6LeT5NWklP6rDr2a0jaTfsZ5wSZWHOGeqQyejUp3xxLfPt2UpyJEcVQB/zyPcmonNFA==
 
-react-hooks-sse@1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/react-hooks-sse/-/react-hooks-sse-1.0.0.tgz#740cc8b2bb78fa5ab713f07233f8f6c88adee5a3"
-  integrity sha512-dQcIy6t1m9QqWtnS751tYmHjPfYsqfldQGsHqNglV+JpWAwR8o1/yO72nCM5k60smHTiTJ6I01w1SL5JofknZw==
+react-hooks-sse@2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/react-hooks-sse/-/react-hooks-sse-2.0.0.tgz#d42215b1a21542a820250a1c02e4538c3b67af96"
+  integrity sha512-Bv/KYK+QUVS6UWwCyx6nyaOYIvaTMTCjmlXuBK9nATH2DOz+g4PGiIxi5q71ljUTmSPn/q9Cod7xwDA3/gqVQA==
   dependencies:
     "@babel/runtime" "^7.1.5"
-    prop-types "^15.6.2"
 
 react-is@^16.8.1, react-is@^16.8.4:
   version "16.13.1"
