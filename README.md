@@ -34,7 +34,7 @@ const App = () => (
 
 ## API
 
-### `SSEProvider`
+#### `SSEProvider`
 
 The provider manages subscriptions to the SSE server. You can subscribe multiple times to the same event or on different events. The source is lazy, it is created only when one of the hooks is called. The source is destroyed when no more hooks are registered. It is automatically re-created when a new hook is added.
 
@@ -80,22 +80,22 @@ You can provide custom source to the provider. The main use cases are:
 Here is the interface that a source has to implement:
 
 ```ts
-export interface Event {
+interface Event {
   data: any;
 }
 
-export interface Listener {
+interface Listener {
   (event: Event): void;
 }
 
-export interface Source {
+interface Source {
   addEventListener(name: string, listener: Listener): void;
   removeEventListener(name: string, listener: Listener): void;
   close(): void;
 }
 ```
 
-The source is lazy. It is created only when a hook is added. That's why we provide a function to create a source not a source directly.
+The source is lazy, it is created only when a hook is added. That's why we provide a function to create a source not a source directly.
 
 ```jsx
 import React from 'react';
@@ -109,45 +109,96 @@ const App = () => (
 );
 ```
 
-### `useSSE`
+----
 
-The component that uses the hook must be scoped under a `SSEProvider` to have access to the source. Once the hook is created none of the options can be updated (at the moment). You have to unmout / remount the component to update the options.
+#### `useSSE<S, T>(eventName: string, initialState: S, options?: Options<S, T>)`
 
-
-| Name                 | Type                          | Required | Default                        | Description                                                                     |
-| -------------------- | ----------------------------- | -------- | ------------------------------ | ------------------------------------------------------------------------------  |
-| eventName            | `string`                      | `true`   | -                              | The name of the event that you want to listen.                                  |
-| options              | `object`                      | `false`  | -                              | -                                                                               |
-| options.initialState | `T`                           | `false`  | `null`                         | The initial state to use on the first render.                                   |
-| options.stateReducer | `(state: T, changes: U) => T` | `false`  | `(state, changes) => changes`  | The state reducer to control how the state should be updated.                   |
-| options.parser       | `(input: string) => U`        | `false`  | `(input) => JSON.parse(input)` | The parser to control how the event from the server is provided to the reducer. |
+The component that uses the hook must be scoped under a [`SSEProvider`](#SSEProvider) to have access to the source. Once the hook is created none of the options can be updated (at the moment). You have to unmout/remount the component to update the options.
 
 #### Usage
 
 ```jsx
-import React from 'react';
-import { useSSE } from 'react-hooks-sse';
+const state = useSSE('comments', {
+  count: null
+});
+```
 
-const Comments = () => {
-  const state = useSSE('comments', {
-    initialState: {
-      data: {
-        value: null,
-      },
-    },
-    stateReducer(state, changes) {
-      // changes.event - event provided by the source
-      // changes.data - data provided by the parser
+#### `eventName: string`
 
-      return changes;
+The name of the event that you want to listen.
+
+```jsx
+const state = useSSE('comments', {
+  count: null
+});
+```
+
+#### `initialState: S`
+
+The initial state to use on the first render.
+
+```jsx
+const state = useSSE('comments', {
+  count: null
+});
+```
+
+#### `options?: Options<S, T>`
+
+The options to control how the data is consumed from the source.
+
+```ts
+type Action<T> = { event: Event; data: T };
+type StateReducer<S, T> = (state: S, changes: Action<T>) => S;
+type Parser<T> = (data: any) => T;
+
+export type Options<S, T = S> = {
+  stateReducer?: StateReducer<S, T>;
+  parser?: Parser<T>;
+};
+```
+
+#### `options.stateReducer?: <S, T>(state: S, changes: Action<T>) => S`
+
+The reducer to control how the state should be updated.
+
+```tsx
+type Action<T> = {
+  // event is provided by the source
+  event: Event;
+  // data is provided by the parser
+  data: T;
+};
+
+const state = useSSE<S, T>(
+  'comments',
+  {
+    count: null,
+  },
+  {
+    stateReducer(state: S, action: Action<T>) {
+      return changes.data;
     },
-    parser(input) {
+  }
+);
+```
+
+#### `options.parser?: <T>(data: any) => T`
+
+The parser to control how the event from the server is provided to the reducer.
+
+```tsx
+const state = useSSE<S, T>(
+  'comments',
+  {
+    count: null,
+  },
+  {
+    parser(input: any): T {
       return JSON.parse(input);
     },
-  });
-
-  return <p>{state.data.value !== null && <span>{state.data.value}</span>}</p>;
-};
+  }
+);
 ```
 
 ## Run example
