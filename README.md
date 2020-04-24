@@ -15,9 +15,11 @@ import React from 'react';
 import { useSSE, SSEProvider } from 'react-hooks-sse';
 
 const Comments = () => {
-  const state = useSSE('comments');
+  const state = useSSE('comments', {
+    count: null
+  });
 
-  return state ? state.data.value : '...';
+  return state.count ? state.count : '...';
 };
 
 const App = () => (
@@ -34,14 +36,7 @@ const App = () => (
 
 ### `SSEProvider`
 
-The provider manage the subscritpion to the SSE server. You can subscribe multiple times to the same event or on different events. The source is created only once when one of the hook is called inside the tree. The source is destroyed when no more hooks are registered.
-
-#### Options
-
-| Name     | Type     | Required | Default                      | Description                                                                                                             |
-| -------- | -------- | -------- | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| endpoint | `string` | `true`   | -                            | The SSE endpoint to target on the server.                                                                               |
-| options  | `object` | `false`  | `{ withCredentials: false }` | See [`EventSource`](https://developer.mozilla.org/en-US/docs/Web/API/EventSource/EventSource#Parameters) documentation. |
+The provider manages subscriptions to the SSE server. You can subscribe multiple times to the same event or on different events. The source is lazy, it is created only when one of the hooks is called. The source is destroyed when no more hooks are registered. It is automatically re-created when a new hook is added.
 
 #### Usage
 
@@ -50,12 +45,65 @@ import React from 'react';
 import { SSEProvider } from 'react-hooks-sse';
 
 const App = () => (
-  <SSEProvider
-    endpoint="https://sse.example.com"
-    options={{
-      withCredentials: true
-    }}
-  >
+  <SSEProvider endpoint="https://sse.example.com">
+    {/* ... */}
+  </SSEProvider>
+);
+```
+
+#### `endpoint: string`
+
+> The value is required when `source` is omitted.
+
+The SSE endpoint to target. It uses the default source [`EventSource`][EventSource].
+
+```jsx
+import React from 'react';
+import { SSEProvider } from 'react-hooks-sse';
+
+const App = () => (
+  <SSEProvider endpoint="https://sse.example.com">
+    {/* ... */}
+  </SSEProvider>
+);
+```
+
+#### `source: () => Source`
+
+> The value is required when `endpoint` is omitted.
+
+You can provide custom source to the provider. The main use cases are:
+
+- provide additional options to [`EventSource`][EventSource] e.g. [`withCredentials: true`](https://developer.mozilla.org/en-US/docs/Web/API/EventSource/EventSource#Parameters)
+- provide a custom source to control the network request e.g. set `Authorization` header
+
+Here is the interface that a source has to implement:
+
+```ts
+export interface Event {
+  data: any;
+}
+
+export interface Listener {
+  (event: Event): void;
+}
+
+export interface Source {
+  addEventListener(name: string, listener: Listener): void;
+  removeEventListener(name: string, listener: Listener): void;
+  close(): void;
+}
+```
+
+The source is lazy. It is created only when a hook is added. That's why we provide a function to create a source not a source directly.
+
+```jsx
+import React from 'react';
+import { SSEProvider } from 'react-hooks-sse';
+import { createCustomSource } from 'custom-source';
+
+const App = () => (
+  <SSEProvider source={() => createCustomSource()}>
     {/* ... */}
   </SSEProvider>
 );
@@ -123,3 +171,5 @@ yarn build
 ```
 yarn test
 ```
+
+[EventSource]: https://developer.mozilla.org/en-US/docs/Web/API/EventSource
