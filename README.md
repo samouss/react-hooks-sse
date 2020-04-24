@@ -162,7 +162,7 @@ export type Options<S, T = S> = {
 
 The reducer to control how the state should be updated.
 
-```tsx
+```ts
 type Action<T> = {
   // event is provided by the source
   event: Event;
@@ -187,7 +187,7 @@ const state = useSSE<S, T>(
 
 The parser to control how the event from the server is provided to the reducer.
 
-```tsx
+```jsx
 const state = useSSE<S, T>(
   'comments',
   {
