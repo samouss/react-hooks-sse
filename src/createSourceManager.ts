@@ -1,37 +1,27 @@
-export type Listener = (event: MessageEvent) => void;
+import { Source, Listener } from './source';
 
-export type SourceManagerOptions = {
-  endpoint: string;
-  options?: EventSourceInit;
+type State = {
+  source: Source | null;
+  listenersByName: Map<string, Set<Listener>>;
 };
 
 export type SourceManager = {
-  getState(): State;
   addEventListener(name: string, listener: Listener): void;
   removeEventListener(name: string, listener: Listener): void;
 };
 
-type State = {
-  source: EventSource | null;
-  listenersByName: Map<string, Set<Listener>>;
-};
-
-export const createSourceManager = ({
-  endpoint,
-  options = {},
-}: SourceManagerOptions): SourceManager => {
+export const createSourceManager = (
+  createSource: () => Source
+): SourceManager => {
   const state: State = {
     source: null,
     listenersByName: new Map(),
   };
 
   return {
-    getState() {
-      return state;
-    },
     addEventListener(name, listener) {
       if (!state.listenersByName.size) {
-        state.source = new window.EventSource(endpoint, options);
+        state.source = createSource();
       }
 
       if (!state.source) {
@@ -44,10 +34,6 @@ export const createSourceManager = ({
 
       state.listenersByName.set(name, listeners);
 
-      // @ts-ignore The TypeScript definition for `addEventListener` on `EventSource`
-      // is icomplete. The function should be able to accept a string AND receive
-      // a MessageEvent.
-      // https://html.spec.whatwg.org/multipage/server-sent-events.html
       state.source.addEventListener(name, listener);
     },
     removeEventListener(name, listener) {
@@ -63,10 +49,6 @@ export const createSourceManager = ({
         state.listenersByName.delete(name);
       }
 
-      // @ts-ignore The TypeScript definition for `addEventListener` on `EventSource`
-      // is icomplete. The function should be able to accept a string AND receive
-      // a MessageEvent.
-      // https://html.spec.whatwg.org/multipage/server-sent-events.html
       state.source.removeEventListener(name, listener);
 
       if (!state.listenersByName.size) {

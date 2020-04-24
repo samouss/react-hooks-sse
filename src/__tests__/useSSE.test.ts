@@ -12,13 +12,6 @@ describe('useSSE', () => {
     const state = new Map<string, Array<(...args: any[]) => void>>();
 
     return {
-      getState() {
-        // FIX
-        return {
-          source: null,
-          listenersByName: new Map(),
-        };
-      },
       addEventListener: jest.fn((name, listener) => {
         const listeners = state.get(name) || [];
 

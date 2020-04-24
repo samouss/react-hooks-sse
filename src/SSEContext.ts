@@ -1,24 +1,28 @@
 import { FC, createElement, createContext, useState } from 'react';
-import {
-  SourceManager,
-  SourceManagerOptions,
-  createSourceManager,
-} from './createSourceManager';
+import { SourceManager, createSourceManager } from './createSourceManager';
+import { Source } from './source';
 
 export const SSEContext = createContext<SourceManager | null>(null);
 
 export const SSEConsumer = SSEContext.Consumer;
 
-export const SSEProvider: FC<SourceManagerOptions> = ({
-  endpoint,
-  options,
-  children,
-}) => {
+type WithSource = { source: () => Source };
+type WithEndpoint = { endpoint: string };
+type Props = WithSource | WithEndpoint;
+
+const isPropsWithSource = (_: WithSource | WithEndpoint): _ is WithSource =>
+  'source' in _;
+
+const createDefaultSource = (endpoint: string) => (): Source =>
+  new window.EventSource(endpoint);
+
+export const SSEProvider: FC<Props> = ({ children, ...props }) => {
   const [source] = useState(() =>
-    createSourceManager({
-      endpoint,
-      options,
-    })
+    createSourceManager(
+      !isPropsWithSource(props)
+        ? createDefaultSource(props.endpoint)
+        : props.source
+    )
   );
 
   return createElement(
@@ -28,10 +32,4 @@ export const SSEProvider: FC<SourceManagerOptions> = ({
     },
     children
   );
-};
-
-SSEProvider.defaultProps = {
-  options: {
-    withCredentials: false,
-  },
 };

@@ -1,163 +1,103 @@
+import { Source } from '../source';
 import { createSourceManager } from '../createSourceManager';
 
-const createEventSourceMock = (): any =>
-  jest.fn((endpoint, options) => ({
-    ...options,
-    endpoint,
+// TODO
+const createSourceMock = () => {
+  const instance = {
     addEventListener: jest.fn(),
     removeEventListener: jest.fn(),
     close: jest.fn(),
-  }));
-
-describe('createSourceManager', () => {
-  afterEach(() => {
-    delete window.EventSource;
-  });
-
-  const defaultOptions = {
-    endpoint: 'http://localhost/sse',
   };
 
+  return {
+    fn: jest.fn<Source, never>(() => instance),
+    instance,
+  };
+};
+
+describe('createSourceManager', () => {
   describe('addEventListener', () => {
-    it('expect to create a source that listen on `http://localhost/sse`', () => {
-      // TODO: inject in the manager
-      const source = createEventSourceMock();
-      window.EventSource = source;
-
+    it('expect to create a source', () => {
+      const { fn } = createSourceMock();
+      const manager = createSourceManager(fn);
       const event = 'event';
       const listener = () => {};
-      const manager = createSourceManager({
-        ...defaultOptions,
-      });
 
       manager.addEventListener(event, listener);
 
-      expect(source).toHaveBeenCalledTimes(1);
-      expect(source).toHaveBeenCalledWith('http://localhost/sse', {});
-    });
-
-    it('expect to create a source that listen on `http://localhost/sse` with options', () => {
-      // TODO: inject in the manager
-      const source = createEventSourceMock();
-      window.EventSource = source;
-
-      const event = 'event';
-      const listener = () => {};
-      const manager = createSourceManager({
-        ...defaultOptions,
-        options: {
-          withCredentials: true,
-        },
-      });
-
-      manager.addEventListener(event, listener);
-
-      expect(source).toHaveBeenCalledTimes(1);
-      expect(source).toHaveBeenCalledWith('http://localhost/sse', {
-        withCredentials: true,
-      });
+      expect(fn).toHaveBeenCalledTimes(1);
     });
 
     it('expect to create a listener on a source with the provided argument', () => {
-      // TODO: inject in the manager
       // TODO: dispatch with a fake source
-      window.EventSource = createEventSourceMock();
-
+      const { fn, instance } = createSourceMock();
+      const manager = createSourceManager(fn);
       const event = 'event';
       const listener = () => {};
-      const manager = createSourceManager({
-        ...defaultOptions,
-      });
 
       manager.addEventListener(event, listener);
 
-      expect(manager.getState().source!.addEventListener).toHaveBeenCalledWith(
-        event,
-        listener
-      );
+      expect(instance.addEventListener).toHaveBeenCalledWith(event, listener);
     });
 
     it('expect to create a source only once a listener is added', () => {
-      // TODO: inject in the manager
-      const source = createEventSourceMock();
-      window.EventSource = source;
-
+      const { fn } = createSourceMock();
+      const manager = createSourceManager(fn);
       const event = 'event';
       const listener = () => {};
-      const manager = createSourceManager({
-        ...defaultOptions,
-      });
 
-      expect(source).toHaveBeenCalledTimes(0);
+      expect(fn).toHaveBeenCalledTimes(0);
 
       manager.addEventListener(event, listener);
 
-      expect(source).toHaveBeenCalledTimes(1);
+      expect(fn).toHaveBeenCalledTimes(1);
     });
 
     it('expect to create a source only once with multiple listeners', () => {
-      // TODO: inject in the manager
-      const source = createEventSourceMock();
-      window.EventSource = source;
-
+      const { fn } = createSourceMock();
+      const manager = createSourceManager(fn);
       const event = 'event';
       const listener = () => {};
-      const manager = createSourceManager({
-        ...defaultOptions,
-      });
 
       manager.addEventListener(event, listener);
       manager.addEventListener(event, listener);
       manager.addEventListener(event, listener);
 
-      expect(source).toHaveBeenCalledTimes(1);
+      expect(fn).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('removeEventListener', () => {
     it('expect to remove a listener on a source with the provided arguments', () => {
-      // TODO: inject in the manager
-      window.EventSource = createEventSourceMock();
-
+      const { fn, instance } = createSourceMock();
+      const manager = createSourceManager(fn);
       const event = 'event';
       const listener = () => {};
-      const manager = createSourceManager({
-        ...defaultOptions,
-      });
 
       manager.addEventListener(event, listener);
-
-      const { source } = manager.getState();
-
       manager.removeEventListener(event, listener);
 
-      expect(source!.removeEventListener).toHaveBeenCalledWith(event, listener);
+      expect(instance.removeEventListener).toHaveBeenCalledWith(
+        event,
+        listener
+      );
     });
 
     it('expect to close the source if the listener is the last one of all events', () => {
-      // TODO: inject in the manager
-      window.EventSource = createEventSourceMock();
-
+      const { fn, instance } = createSourceMock();
+      const manager = createSourceManager(fn);
       const event = 'event';
       const listener = () => {};
 
-      const manager = createSourceManager({
-        ...defaultOptions,
-      });
-
       manager.addEventListener(event, listener);
-
-      const { source } = manager.getState();
-
       manager.removeEventListener(event, listener);
 
-      expect(source!.close).toHaveBeenCalled();
-      expect(manager.getState().source).toBe(null);
+      expect(instance.close).toHaveBeenCalled();
     });
 
     it('expect to not close the source if more listeners remain', () => {
-      // TODO: inject in the manager
-      window.EventSource = createEventSourceMock();
+      const { fn, instance } = createSourceMock();
+      const manager = createSourceManager(fn);
 
       const event0 = 'event0';
       const listener0 = () => {};
@@ -165,19 +105,11 @@ describe('createSourceManager', () => {
       const event1 = 'event';
       const listener1 = () => {};
 
-      const manager = createSourceManager({
-        ...defaultOptions,
-      });
-
       manager.addEventListener(event0, listener0);
       manager.addEventListener(event1, listener1);
-
-      const { source } = manager.getState();
-
       manager.removeEventListener(event0, listener0);
 
-      expect(source!.close).not.toHaveBeenCalled();
-      expect(manager.getState().source).toBe(source);
+      expect(instance.close).not.toHaveBeenCalled();
     });
   });
 });
