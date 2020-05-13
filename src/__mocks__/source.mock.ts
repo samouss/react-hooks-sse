@@ -28,7 +28,7 @@ export const createSourceMock = () => {
   };
 
   return {
-    fn: jest.fn<Source, never>(() => source),
+    fn: jest.fn<Source, unknown[]>(() => source),
     source,
   };
 };
