@@ -41,7 +41,7 @@
     "@babel/plugin-transform-runtime": "7.10.1",
     "@babel/preset-env": "7.10.2",
     "@babel/preset-typescript": "7.10.1",
-    "@types/jest": "^25.2.1",
+    "@types/jest": "^26.0.0",
     "@types/react": "^16.8.17",
     "@types/react-dom": "^16.8.4",
     "@types/react-test-renderer": "^16.9.2",
