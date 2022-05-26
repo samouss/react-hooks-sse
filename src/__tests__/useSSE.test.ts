@@ -1,4 +1,4 @@
-import { FC, createElement, createContext } from 'react';
+import { FC, ReactNode, createElement, createContext } from 'react';
 import TestRenderer, { act } from 'react-test-renderer';
 import { SourceMock, createSourceMock } from '../__mocks__/source.mock';
 import { SourceManager } from '../createSourceManager';
@@ -15,6 +15,7 @@ describe('useSSE', () => {
   type Props = Options<State> & {
     eventName: string;
     initialState: State;
+    children?: (state: State) => ReactNode;
   };
 
   const FakeApp: FC<Props> = ({
@@ -53,22 +54,21 @@ describe('useSSE', () => {
   it('expect to `useSSE` with the default options', () => {
     const { source } = createSourceMock();
     const context = createFakeContext(source);
-    const children = jest.fn();
+    const children = jest.fn<ReactNode, State[]>();
     const eventName = 'push';
     const initialState = {
       value: 'Apple',
     };
 
     TestRenderer.create(
-      createElement(
-        FakeApp,
-        {
-          eventName,
-          initialState,
-          context,
+      createElement(FakeApp, {
+        eventName,
+        initialState,
+        context,
+        children(...args): ReactNode {
+          return children(...args);
         },
-        children
-      )
+      })
     );
 
     expect(children).toHaveBeenCalledWith({
@@ -173,7 +173,7 @@ describe('useSSE', () => {
     it('expect to parse the value with the default JSON parser', () => {
       const { source } = createSourceMock();
       const context = createFakeContext(source);
-      const children = jest.fn();
+      const children = jest.fn<ReactNode, State[]>();
       const eventName = 'push';
       const initialState = {
         value: 'Apple',
@@ -181,15 +181,14 @@ describe('useSSE', () => {
 
       act(() => {
         TestRenderer.create(
-          createElement(
-            FakeApp,
-            {
-              eventName,
-              initialState,
-              context,
+          createElement(FakeApp, {
+            eventName,
+            initialState,
+            context,
+            children(...args): ReactNode {
+              return children(...args);
             },
-            children
-          )
+          })
         );
       });
 
@@ -210,7 +209,7 @@ describe('useSSE', () => {
     it('expect to parse the value with the given parser', () => {
       const { source } = createSourceMock();
       const context = createFakeContext(source);
-      const children = jest.fn();
+      const children = jest.fn<ReactNode, State[]>();
       const eventName = 'push';
       const initialState = {
         value: 'Apple',
@@ -224,16 +223,15 @@ describe('useSSE', () => {
 
       act(() => {
         TestRenderer.create(
-          createElement(
-            FakeApp,
-            {
-              eventName,
-              initialState,
-              parser,
-              context,
+          createElement(FakeApp, {
+            eventName,
+            initialState,
+            parser,
+            context,
+            children(...args): ReactNode {
+              return children(...args);
             },
-            children
-          )
+          })
         );
       });
 
@@ -332,7 +330,7 @@ describe('useSSE', () => {
     it('expect to return the value from the default stateReducer', () => {
       const { source } = createSourceMock();
       const context = createFakeContext(source);
-      const children = jest.fn();
+      const children = jest.fn<ReactNode, State[]>();
       const eventName = 'push';
       const initialState = {
         value: 'Apple',
@@ -340,15 +338,14 @@ describe('useSSE', () => {
 
       act(() => {
         TestRenderer.create(
-          createElement(
-            FakeApp,
-            {
-              eventName,
-              initialState,
-              context,
+          createElement(FakeApp, {
+            eventName,
+            initialState,
+            context,
+            children(...args): ReactNode {
+              return children(...args);
             },
-            children
-          )
+          })
         );
       });
 
@@ -367,7 +364,7 @@ describe('useSSE', () => {
     });
 
     it('expect to return the value from the given stateReducer', () => {
-      const children = jest.fn();
+      const children = jest.fn<ReactNode, State[]>();
       const eventName = 'push';
       const initialState = {
         value: 'first',
@@ -384,16 +381,15 @@ describe('useSSE', () => {
 
       act(() => {
         TestRenderer.create(
-          createElement(
-            FakeApp,
-            {
-              eventName,
-              initialState,
-              stateReducer,
-              context,
+          createElement(FakeApp, {
+            eventName,
+            initialState,
+            stateReducer,
+            context,
+            children(...args): ReactNode {
+              return children(...args);
             },
-            children
-          )
+          })
         );
       });
 

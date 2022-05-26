@@ -64,7 +64,6 @@ describe('SSEContext', () => {
         {
           endpoint: 'http://localhost/sse',
         },
-        // eslint-disable-next-line react/no-children-prop
         createElement(SSEConsumer, {
           children(context) {
             expect(context).toBe(manager);
