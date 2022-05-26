@@ -12,6 +12,12 @@ module.exports = {
       extends: ['airbnb-typescript', 'prettier', 'prettier/@typescript-eslint'],
       rules: {
         'import/prefer-default-export': 0,
+        'react/no-children-prop': [
+          1,
+          {
+            allowFunctions: true,
+          },
+        ],
       },
     },
   ],
