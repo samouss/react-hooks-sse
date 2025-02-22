@@ -46,7 +46,7 @@
     "@rollup/plugin-node-resolve": "^15.0.1",
     "@types/jest": "^29.2.0",
     "@types/react": "^18.0.9",
-    "@types/react-dom": "^18.0.5",
+    "@types/react-dom": "^19.0.1",
     "@types/react-test-renderer": "^18.0.0",
     "@typescript-eslint/eslint-plugin": "^5.26.0",
     "@typescript-eslint/parser": "^5.26.0",
